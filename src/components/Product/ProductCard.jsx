@@ -1,0 +1,121 @@
+// src/components/Product/ProductCard.jsx
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import supabase from "../../lib/supabaseClient";
+import { useAuth } from "../../context/authContext";
+import { ShoppingCart, Heart } from "lucide-react";
+
+export default function ProductCard({ product }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const [activeImage, setActiveImage] = useState(product.images?.[0] || "");
+  const productId = Number(product.id);
+
+  const addToCart = async (e) => {
+    e.stopPropagation();
+
+    if (!user) return;
+
+    const { data: exist } = await supabase
+      .from("cart")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("product_id", productId)
+      .single();
+
+    if (exist) {
+      await supabase
+        .from("cart")
+        .update({ quantity: exist.quantity + 1 })
+        .eq("id", exist.id);
+
+      window.dispatchEvent(new Event("cart-updated"));
+      return;
+    }
+
+    await supabase.from("cart").insert([
+      {
+        user_id: user.id,
+        product_id: productId,
+        quantity: 1,
+      },
+    ]);
+
+    window.dispatchEvent(new Event("cart-updated"));
+  };
+
+  const toggleWishlist = async (e) => {
+    e.stopPropagation();
+    if (!user) return;
+
+    const { data: exist } = await supabase
+      .from("wishlist")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("product_id", productId)
+      .single();
+
+    if (exist) {
+      await supabase.from("wishlist").delete().eq("id", exist.id);
+      window.dispatchEvent(new Event("wishlist-updated"));
+      return;
+    }
+
+    await supabase.from("wishlist").insert([
+      {
+        user_id: user.id,
+        product_id: productId,
+      },
+    ]);
+
+    window.dispatchEvent(new Event("wishlist-updated"));
+  };
+
+  return (
+    <div
+      className="cursor-pointer flex flex-col items-center text-center"
+      onClick={() => navigate(`/product/${product.id}`)}
+    >
+      <div className="w-[180px] h-[180px] flex items-center justify-center">
+        <img
+          src={activeImage}
+          alt={product.name}
+          className="object-contain max-h-[180px]"
+          onMouseEnter={() =>
+            product.images?.[1] && setActiveImage(product.images[1])
+          }
+          onMouseLeave={() =>
+            setActiveImage(product.images?.[0] || "")
+          }
+        />
+      </div>
+
+      <p className="text-[11px] text-gray-500 mt-2">{product.brand}</p>
+
+      <h3 className="mt-1 text-[13px] font-semibold text-gray-900 leading-tight max-w-[180px]">
+        {product.name}
+      </h3>
+
+      <p className="text-sm font-semibold text-gray-900 mt-2">
+        Rp {Number(product.price).toLocaleString("id-ID")}
+      </p>
+
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={addToCart}
+          className="p-2 bg-black rounded-md"
+        >
+          <ShoppingCart size={16} color="white" />
+        </button>
+
+        <button
+          onClick={toggleWishlist}
+          className="p-2 bg-gray-200 rounded-md"
+        >
+          <Heart size={16} className="text-black" />
+        </button>
+      </div>
+    </div>
+  );
+}
