@@ -70,7 +70,7 @@ export default function Register() {
 };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#FAF7F0] px-4">
+    <main className="min-h-screen flex items-center justify-center bg-white px-4">
       <button
         className="absolute left-4 top-4 p-2 bg-white/80 rounded-full shadow-sm hover:scale-110 transition"
         onClick={() => navigate(-1)}
@@ -98,7 +98,7 @@ export default function Register() {
               placeholder="Masukkan nama kamu..."
               value={username}
               onChange={(e) => setName(e.target.value)}
-              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
+              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-white border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
               required
             />
           </div>
@@ -111,7 +111,7 @@ export default function Register() {
               placeholder="Masukkan email..."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
+              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-white border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
               required
             />
           </div>
@@ -124,7 +124,7 @@ export default function Register() {
               placeholder="Masukkan Alamat..."
               value={alamat}
               onChange={(e) => setAlamat(e.target.value)}
-              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
+              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-white border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
               required
             />
           </div>
@@ -137,7 +137,7 @@ export default function Register() {
               placeholder="Masukkan No Hp..."
               value={no_hp}
               onChange={(e) => setno_hp(e.target.value)}
-              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
+              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-white border border-[#E5E1D8] focus:border-[#CFCBBF] focus:ring-2 focus:ring-[#D8D4CA] transition-all"
               required
             />
           </div>
@@ -150,7 +150,7 @@ export default function Register() {
               placeholder="Masukkan password..."
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8]"
+              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-white border border-[#E5E1D8]"
               required
             />
             <button
@@ -170,7 +170,7 @@ export default function Register() {
               placeholder="Ulangi password..."
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8]"
+              className="w-full mt-1 px-4 py-4 rounded-xl outline-none bg-white border border-[#E5E1D8]"
               required
             />
             <button

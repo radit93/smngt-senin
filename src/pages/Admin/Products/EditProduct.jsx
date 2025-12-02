@@ -10,17 +10,13 @@ export default function EditProduct() {
   const [loading, setLoading] = useState(true);
 
   // ------------------------------------------------
-  // STATE FORM
+  // STATE FORM PRODUK UTAMA
   // ------------------------------------------------
   const [form, setForm] = useState({
     nama: "",
     brand_id: "",
     category_ids: [],
-    grade: "",
     deskripsi: "",
-    size: "",
-    stok: "",
-    harga: "",
     gambar1: null,
     gambar2: null,
   });
@@ -59,11 +55,7 @@ export default function EditProduct() {
       nama: data.name,
       brand_id: data.brand_id,
       category_ids: data.product_categories.map((c) => c.category_id),
-      grade: data.grades,
       deskripsi: data.description,
-      size: data.stock_variants[0]?.size ?? "",
-      stok: data.stock_variants[0]?.stock ?? "",
-      harga: data.price,
       gambar1: null,
       gambar2: null,
     });
@@ -81,14 +73,14 @@ export default function EditProduct() {
     setForm((p) => ({ ...p, [name]: value }));
   };
 
-  const toggleCategory = (id) => {
+  const toggleCategory = (catId) => {
     setForm((prev) => {
-      const exists = prev.category_ids.includes(id);
+      const exists = prev.category_ids.includes(catId);
       return {
         ...prev,
         category_ids: exists
-          ? prev.category_ids.filter((c) => c !== id)
-          : [...prev.category_ids, id],
+          ? prev.category_ids.filter((c) => c !== catId)
+          : [...prev.category_ids, catId],
       };
     });
   };
@@ -116,7 +108,7 @@ export default function EditProduct() {
   };
 
   // ------------------------------------------------
-  // SUBMIT: UPDATE PRODUCT
+  // SUBMIT: UPDATE PRODUCT UTAMA
   // ------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -189,23 +181,6 @@ export default function EditProduct() {
             </select>
           </div>
 
-          {/* GRADE */}
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-600">
-              Grade
-            </label>
-            <select
-              value={form.grade}
-              onChange={(e) => handleChange("grade", e.target.value)}
-              className="w-full bg-[#FAF7F0] border border-gray-300 rounded-xl px-4 py-3"
-            >
-              <option value="">Pilih Grade</option>
-              <option value="BNIB">BNIB</option>
-              <option value="VNDS">VNDS</option>
-              <option value="2ND">2ND</option>
-            </select>
-          </div>
-
           {/* DESKRIPSI */}
           <div className="md:col-span-2">
             <label className="block mb-1 text-sm font-medium text-gray-600">
@@ -237,31 +212,6 @@ export default function EditProduct() {
               ))}
             </div>
           </div>
-
-          {/* SIZE */}
-          <FormInput
-            label="Size"
-            name="size"
-            form={form}
-            handle={handleChange}
-          />
-
-          {/* STOK */}
-          <FormInput
-            label="Stok"
-            name="stok"
-            type="number"
-            form={form}
-            handle={handleChange}
-          />
-
-          {/* HARGA */}
-          <FormInput
-            label="Harga"
-            name="harga"
-            form={form}
-            handle={handleChange}
-          />
 
           {/* GAMBAR 1 */}
           <div>
@@ -308,9 +258,6 @@ export default function EditProduct() {
   );
 }
 
-//
-// UNIVERSAL INPUT
-//
 function FormInput({ label, name, type = "text", form, handle }) {
   return (
     <div>

@@ -55,7 +55,7 @@ export default function Login() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#FAF7F0] px-4 relative">
+    <main className="min-h-screen flex items-center justify-center bg-white px-4 relative">
       <button
         className="absolute left-4 top-20 z-[999] p-2 bg-white/90 rounded-full shadow-sm hover:scale-110 transition"
         onClick={() => navigate(-1)}
@@ -74,7 +74,7 @@ export default function Login() {
             <input
               type="email"
               placeholder="Masukkan email..."
-              className="w-full mt-1 px-4 py-3 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8]"
+              className="w-full mt-1 px-4 py-3 rounded-xl outline-none bg-white border border-[#E5E1D8]"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -86,7 +86,7 @@ export default function Login() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Masukkan password..."
-              className="w-full mt-1 px-4 py-3 rounded-xl outline-none bg-[#FAF7F0] border border-[#E5E1D8]"
+              className="w-full mt-1 px-4 py-3 rounded-xl outline-none bg-white border border-[#E5E1D8]"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

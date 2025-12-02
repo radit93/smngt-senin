@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Header from "./components/Layout/Header/Header";
 import Footer from "./components/Layout/Footer/Footer";
@@ -22,31 +22,36 @@ import ProductsPage from "./pages/Admin/Products/ProductsPage";
 import OrdersPage from "./pages/Admin/Orders/OrdersPage";
 import AddProduct from "./pages/Admin/Products/AddProduct";
 import EditProduct from "./pages/Admin/Products/EditProduct";
+import EditVariant from "./pages/Admin/Products/EditVariants"
 
 import { SearchProvider } from "./context/SearchContext";
 
 export default function App() {
+  const location = useLocation();
+
+  // path yang ga butuh header/footer
+  const hideLayout =
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname.startsWith("/admin");
+
   return (
     <SearchProvider>
-
-      <Header />
+      {!hideLayout && <Header />}
 
       <Routes>
-        {/* PUBLIC */}
         <Route path="/" element={<Main />} />
+
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
-        {/* CATEGORY */}
         <Route path="/category/:main" element={<CategoryPage />} />
         <Route path="/category/:main/:sub" element={<CategoryPage />} />
 
-        {/* USER */}
         <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
 
-        {/* ADMIN */}
         <Route
           path="/admin"
           element={
@@ -60,14 +65,14 @@ export default function App() {
           <Route path="products" element={<ProductsPage />} />
           <Route path="products/add" element={<AddProduct />} />
           <Route path="products/edit/:id" element={<EditProduct />} />
+          <Route path="products/:id/variants" element={<EditVariant />} />
           <Route path="orders" element={<OrdersPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      <Footer />
-
+      {!hideLayout && <Footer />}
     </SearchProvider>
   );
 }

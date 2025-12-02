@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Trash2, Pencil, Plus } from "lucide-react";
+import { Trash2, Pencil, Plus, Bolt } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getProducts, deleteProduct } from "./Product.api";
 
@@ -29,10 +29,9 @@ export default function ProductsPage() {
     }
   };
 
-  
-
   return (
     <div className="p-6">
+      {/* HEADER TITLE */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Data Produk</h1>
 
@@ -44,7 +43,7 @@ export default function ProductsPage() {
         </button>
       </div>
 
-      {/* HEADER */}
+      {/* HEADER TABEL */}
       <div className="grid grid-cols-12 font-semibold border-b py-3 text-sm">
         <div className="col-span-2">Nama</div>
         <div>Brand</div>
@@ -60,79 +59,134 @@ export default function ProductsPage() {
 
       {/* DATA */}
       {products.map((p) => (
-        <div
-          key={p.id}
-          className="grid grid-cols-12 border-b py-4 text-sm items-center"
-        >
-          {/* NAMA */}
-          <div className="col-span-2 font-medium">{p.name}</div>
+        <div key={p.id} className="border-b py-4 text-sm">
+          
+          {/* ROW UTAMA */}
+          <div className="grid grid-cols-12 items-center">
 
-          {/* BRAND */}
-          <div>{p.brands?.name ?? "-"}</div>
+            {/* NAMA */}
+            <div className="col-span-2 font-medium">{p.name}</div>
 
-          {/* KATEGORI MULTIPLE */}
-          <div className="col-span-2">
-            {p.product_categories?.length > 0 ? (
-              p.product_categories.map((c, i) => (
-                <span
-                  key={i}
-                  className="inline-block bg-gray-200 rounded px-2 py-1 text-xs mr-1"
+            {/* BRAND */}
+            <div>{p.brands?.name ?? "-"}</div>
+
+            {/* KATEGORI */}
+            <div className="col-span-2">
+              {p.product_categories?.length > 0 ? (
+                p.product_categories.map((c, i) => (
+                  <span
+                    key={i}
+                    className="inline-block bg-gray-200 rounded px-2 py-1 text-xs mr-1"
+                  >
+                    {c.categories?.name}
+                  </span>
+                ))
+              ) : (
+                "-"
+              )}
+            </div>
+
+            {/* STOK (varian pertama saja) */}
+            <div>
+              {p.stock_variants?.length > 0 ? p.stock_variants[0].stock : "-"}
+            </div>
+
+            {/* GRADE 1 */}
+            <div>
+              {p.stock_variants?.length > 0
+                ? p.stock_variants[0].grades?.name
+                : "-"}
+            </div>
+
+            {/* SIZE 1 */}
+            <div>
+              {p.stock_variants?.length > 0 ? p.stock_variants[0].size : "-"}
+            </div>
+
+            {/* HARGA 1 */}
+            <div>
+              {p.stock_variants?.length > 0
+                ? `Rp ${p.stock_variants[0].price.toLocaleString("id-ID")}`
+                : "-"}
+            </div>
+
+            {/* GAMBAR 1 */}
+            <div>
+              {p.product_image?.[0] ? (
+                <img
+                  src={p.product_image[0].image_url}
+                  className="w-12 h-12 object-cover rounded"
+                />
+              ) : (
+                "-"
+              )}
+            </div>
+
+            {/* GAMBAR 2 */}
+            <div>
+              {p.product_image?.[1] ? (
+                <img
+                  src={p.product_image[1].image_url}
+                  className="w-12 h-12 object-cover rounded"
+                />
+              ) : (
+                "-"
+              )}
+            </div>
+
+            {/* AKSI */}
+            <div className="flex justify-center gap-3">
+              {/* EDIT PRODUCT */}
+              <button onClick={() => navigate(`/admin/products/edit/${p.id}`)}>
+                <Bolt size={18} className="text-black" />
+              </button>
+
+              {/* EDIT VARIANT */}
+              <button
+                onClick={() => navigate(`/admin/products/${p.id}/variants`)}
+              >
+                <Pencil size={18} className="text-blue-600" />
+              </button>
+
+              {/* DELETE */}
+              <button onClick={() => handleDelete(p.id)}>
+                <Trash2 size={18} className="text-red-600" />
+              </button>
+            </div>
+
+          </div>
+
+          {/* ================================
+               VARIANTS LIST LANGSUNG TAMPIL
+          ================================= */}
+          <div className="mt-3 ml-4 space-y-2">
+            {p.stock_variants?.length > 0 ? (
+              p.stock_variants.map((v) => (
+                <div
+                  key={v.id}
+                  className="grid grid-cols-4 gap-4 bg-gray-100 px-4 py-2 rounded"
                 >
-                  {c.categories?.name}
-                </span>
+                  <div>
+                    <span className="font-semibold">Size:</span> {v.size}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Grade:</span>{" "}
+                    {v.grades?.name}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Harga:</span>{" "}
+                    Rp {Number(v.price).toLocaleString("id-ID")}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Stok:</span> {v.stock}
+                  </div>
+                </div>
               ))
             ) : (
-              "-"
+              <div className="text-gray-500 text-sm ml-1">
+                Tidak ada varian.
+              </div>
             )}
-          </div>
-
-          {/* STOK */}
-          <div>{p.stock_variants?.[0]?.stock ?? "-"}</div>
-
-          {/* GRADE */}
-          <div>{p.grades ?? "-"}</div>
-
-          {/* SIZE */}
-          <div>{p.stock_variants?.[0]?.size ?? "-"}</div>
-
-          {/* HARGA */}
-          <div>Rp {Number(p.price).toLocaleString("id-ID")}</div>
-
-          {/* GAMBAR 1 */}
-          <div>
-            {p.product_image?.[0] ? (
-              <img
-                src={p.product_image[0].image_url}
-                className="w-12 h-12 object-cover rounded"
-              />
-            ) : (
-              "-"
-            )}
-          </div>
-
-          {/* GAMBAR 2 */}
-          <div>
-            {p.product_image?.[1] ? (
-              <img
-                src={p.product_image[1].image_url}
-                className="w-12 h-12 object-cover rounded"
-              />
-            ) : (
-              "-"
-            )}
-          </div>
-
-          {/* AKSI */}
-          <div className="flex justify-center gap-3">
-
-             {/* EDIT */}
-            <button onClick={() => navigate(`/admin/products/edit/${p.id}`)}>
-              <Pencil size={18} className="text-blue-600" />
-            </button>
-
-            <button onClick={() => handleDelete(p.id)}>
-              <Trash2 size={18} className="text-red-600" />
-            </button>
           </div>
         </div>
       ))}

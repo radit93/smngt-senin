@@ -10,12 +10,12 @@ export default function AddProduct() {
   // -----------------------------------------
   // STATE FORM
   // -----------------------------------------
-  const [form, setForm] = useState({
+    const [form, setForm] = useState({
     nama: "",
-    brand_id: "",          // 🔴 FK → brands.id
-    category_ids: [],      // 🔴 MULTI kategori → array
-    grade: "",             // 🔴 kolom baru → product.grade
-    deskripsi: "",         // 🔴 kolom baru → product.description
+    brand_id: "",
+    category_ids: [],
+    grades_id: "",
+    deskripsi: "",
     size: "",
     stok: "",
     harga: "",
@@ -23,11 +23,13 @@ export default function AddProduct() {
     gambar2: null,
   });
 
+
   // -----------------------------------------
   // DROPDOWN DATA
   // -----------------------------------------
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [grades, setGrades] = useState([]);
 
   // -----------------------------------------
   // FETCH BRAND DAN CATEGORY
@@ -35,6 +37,7 @@ export default function AddProduct() {
   useEffect(() => {
     loadBrands();
     loadCategories();
+    loadGrades();
   }, []);
 
   const loadBrands = async () => {
@@ -51,6 +54,14 @@ export default function AddProduct() {
       .select("id, name");
 
     if (!error) setCategories(data);
+  };
+
+  const loadGrades = async () => {
+    const { data, error } = await supabase
+      .from("grades")
+      .select("id, name");
+
+    if (!error) setGrades(data);
   };
 
   // -----------------------------------------
@@ -185,14 +196,16 @@ export default function AddProduct() {
               Grade Produk
             </label>
             <select
-              value={form.grade}
-              onChange={(e) => handleChange("grade", e.target.value)}
+              value={form.grades_id}
+              onChange={(e) => handleChange("grades_id", e.target.value)}
               className="w-full bg-[#FAF7F0] border border-gray-300 rounded-xl px-4 py-3"
             >
               <option value="">Pilih Grade</option>
-              <option value="BNIB">BNIB</option>
-              <option value="VNDS">VNDS</option>
-              <option value="2ND">2ND</option>
+              {grades.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
+              ))}
             </select>
           </div>
 

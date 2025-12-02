@@ -9,9 +9,7 @@ export async function getProducts() {
     .select(`
       id,
       name,
-      price,
       brand_id,
-      grades,
       description,
       brands(name),
       product_categories(
@@ -19,13 +17,20 @@ export async function getProducts() {
         categories(name)
       ),
       product_image(order, image_url),
-      stock_variants(size, stock)
+      stock_variants(
+        id,
+        size,
+        stock,
+        price,
+        grades:grades_id(name)
+      )
     `)
     .order("id", { ascending: true });
 
   if (error) throw error;
   return data;
 }
+
 
 // 
 // GET PRODUCT (SINGLE)
@@ -36,9 +41,7 @@ export async function getProductById(id) {
     .select(`
       id,
       name,
-      price,
       brand_id,
-      grades,
       description,
       product_categories (
         category_id,
@@ -49,8 +52,11 @@ export async function getProductById(id) {
         image_url
       ),
       stock_variants (
+        id,
         size,
-        stock
+        stock,
+        price,
+        grades:grades_id(name)
       )
     `)
     .eq("id", id)
@@ -60,20 +66,20 @@ export async function getProductById(id) {
   return data;
 }
 
+
 //
 // INSERT PRODUCT
 //
 export async function insertProduct(form, img1, img2, brandId, categoryIds) {
-  // 1. Insert produk utama
+
+  // 1. Insert Produk utama
   const { data: product, error: err1 } = await supabase
     .from("product")
     .insert([
       {
         name: form.nama,
-        price: form.harga,
         brand_id: brandId,
-        description: form.deskripsi,
-        grades: form.grade
+        description: form.deskripsi
       }
     ])
     .select()
@@ -83,28 +89,29 @@ export async function insertProduct(form, img1, img2, brandId, categoryIds) {
 
   const productId = product.id;
 
-  // 2. Insert gambar
+  // 2. Insert kedua gambar
   await supabase.from("product_image").insert([
     { product_id: productId, image_url: img1, order: 1 },
     { product_id: productId, image_url: img2, order: 2 }
   ]);
 
-  // 3. Insert multi kategori
+  // 3. Insert kategori
   if (categoryIds.length > 0) {
     const mapping = categoryIds.map((cat) => ({
       product_id: productId,
       category_id: cat
     }));
-
     await supabase.from("product_categories").insert(mapping);
   }
 
-  // 4. Insert size + stok
+  // 4. Insert varian pertama (size + grade + price + stock)
   await supabase.from("stock_variants").insert([
     {
       product_id: productId,
-      size: form.size,
-      stock: form.stok
+      size: Number(form.size),
+      grades_id: Number(form.grades_id),
+      price: Number(form.harga),
+      stock: Number(form.stok)
     }
   ]);
 
@@ -151,13 +158,12 @@ export async function deleteProduct(id) {
 // Update
 // 
 export async function updateProduct(productId, form, newImg1, newImg2, brandId, categoryIds) {
-  // 1. Ambil gambar lama dari DB
+  // 1. Ambil gambar lama
   const { data: oldImages } = await supabase
     .from("product_image")
     .select("id, image_url, order")
     .eq("product_id", productId);
 
-  // 2. Hapus gambar lama jika admin mengganti gambar
   const imagesToDelete = [];
 
   if (newImg1 && oldImages[0]) {
@@ -174,7 +180,7 @@ export async function updateProduct(productId, form, newImg1, newImg2, brandId, 
     await supabase.storage.from("product_image").remove(imagesToDelete);
   }
 
-  // 3. Update gambar baru (kalau ada)
+  // 2. Update gambar
   if (newImg1) {
     await supabase
       .from("product_image")
@@ -191,22 +197,20 @@ export async function updateProduct(productId, form, newImg1, newImg2, brandId, 
       .eq("order", 2);
   }
 
-  // 4. Update tabel product utama
+  // 3. Update product utama
   await supabase
     .from("product")
     .update({
       name: form.nama,
-      price: form.harga,
       brand_id: brandId,
-      grades: form.grade,
       description: form.deskripsi
     })
     .eq("id", productId);
 
-  // 5. Update kategori (replace semua)
-  if (categoryIds.length > 0) {
-    await supabase.from("product_categories").delete().eq("product_id", productId);
+  // 4. Replace kategori
+  await supabase.from("product_categories").delete().eq("product_id", productId);
 
+  if (categoryIds.length > 0) {
     const mapping = categoryIds.map((cat) => ({
       product_id: productId,
       category_id: cat
@@ -215,14 +219,73 @@ export async function updateProduct(productId, form, newImg1, newImg2, brandId, 
     await supabase.from("product_categories").insert(mapping);
   }
 
-  // 6. Update stok + size
-  await supabase
-    .from("stock_variants")
-    .update({
-      size: form.size,
-      stock: form.stok
-    })
-    .eq("product_id", productId);
+  return true;
+}
 
+// =======================================================
+// VARIANT API (stock_variants)
+// =======================================================
+
+export async function getVariants(productId) {
+  const { data, error } = await supabase
+    .from("stock_variants")
+    .select(`
+      id,
+      size,
+      price,
+      stock,
+      grades:grades_id ( id, name )
+    `)
+    .eq("product_id", productId)
+    .order("id", { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getAllGrades() {
+  const { data, error } = await supabase
+    .from("grades")
+    .select("id, name")
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
+export async function addVariant(productId, variant) {
+  const payload = {
+    product_id: productId,
+    size: Number(variant.size),
+    grades_id: Number(variant.grades_id),
+    price: Number(variant.price),
+    stock: Number(variant.stock)
+  };
+
+  const { error } = await supabase
+    .from("stock_variants")
+    .insert([payload]);
+
+  if (error) throw error;
+  return true;
+}
+
+export async function updateVariantField(variantId, field, value) {
+  const { error } = await supabase
+    .from("stock_variants")
+    .update({ [field]: value })
+    .eq("id", variantId);
+
+  if (error) throw error;
+  return true;
+}
+
+export async function deleteVariant(variantId) {
+  const { error } = await supabase
+    .from("stock_variants")
+    .delete()
+    .eq("id", variantId);
+
+  if (error) throw error;
   return true;
 }

@@ -15,10 +15,10 @@ export async function getProductsByBrandSlug(slug) {
     .select(`
       id,
       name,
-      price,
       brand_id,
       brands ( name ),
-      product_image ( order, image_url )
+      product_image ( order, image_url ),   
+      stock_variants ( price )
     `)
     .eq("brand_id", brandId)
     .order("id", { ascending: true });
@@ -36,11 +36,11 @@ export async function getProductsByCategory(main) {
     .select(`
       id,
       name,
-      price,
       brand_id,
       kategori,
       brands ( name ),
       product_image ( order, image_url )
+      stock_variants ( price )
     `)
     .eq("kategori", main)
     .order("id", { ascending: true });
@@ -58,12 +58,12 @@ export async function getProductsBySub(main, sub) {
     .select(`
       id,
       name,
-      price,
       brand_id,
       kategori,
       subkategori,
       brands ( name ),
       product_image ( order, image_url )
+      stock_variants ( price )
     `)
     .eq("kategori", main)
     .eq("subkategori", sub)
@@ -82,33 +82,12 @@ export async function searchProducts(query) {
     .select(`
       id,
       name,
-      price,
       brand_id,
       brands ( name ),
       product_image ( order, image_url )
+      stock_variants ( price )
     `)
     .ilike("name", `%${query}%`)
-    .order("id", { ascending: true });
-
-  if (error) throw error;
-  return mapProducts(data);
-}
-
-// =========================
-// FOR MAIN LANDING PAGE (ROW NIKE / NB)
-// =========================
-export async function getLandingProducts(brandId) {
-  const { data, error } = await supabase
-    .from("product")
-    .select(`
-      id,
-      name,
-      price,
-      brand_id,
-      brands ( name ),
-      product_image ( order, image_url )
-    `)
-    .eq("brand_id", brandId)
     .order("id", { ascending: true });
 
   if (error) throw error;

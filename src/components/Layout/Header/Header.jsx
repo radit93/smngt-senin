@@ -35,7 +35,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full sticky top-0 z-50 shadow-md bg-[#FAF7F0]">
+    <header className="w-full sticky top-0 z-50 shadow-md bg-white">
       <div className="flex items-center justify-between px-8 py-4">
 
         <div

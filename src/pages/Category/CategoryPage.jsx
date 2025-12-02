@@ -1,12 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
-import {
-  getProductsByBrandSlug,
-  getProductsByCategory,
-  getProductsBySub
-} from "../../services/ProductService";
-
+import { getProductsByBrandSlug, getProductsByCategory, getProductsBySub } from "../../services/ProductService";
 import ProductCard from "../../components/Product/ProductCard";
 
 export default function CategoryPage() {

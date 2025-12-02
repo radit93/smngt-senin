@@ -33,7 +33,7 @@ function Main() {
   const isSearching = searchQuery.trim() !== "";
 
   return (
-    <div className="bg-[#FAF7F0] min-h-screen w-full overflow-x-hidden flex flex-col">
+    <div className="bg-white min-h-screen w-full overflow-x-hidden flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center text-gray-800">
         <Container>
 

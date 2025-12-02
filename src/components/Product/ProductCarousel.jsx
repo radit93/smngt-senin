@@ -23,6 +23,20 @@ export default function ProductCarousel({ brandSlug }) {
     load();
   }, [brandSlug]);
 
+  useEffect(() => {
+  if (totalPages <= 1) return;
+
+  const interval = setInterval(() => {
+    setPage(prev => {
+      if (prev < totalPages - 1) return prev + 1;
+      return 0;  // balik lagi ke awal
+    });
+  }, 5000); // 5 detik
+
+  return () => clearInterval(interval);
+}, [totalPages]);
+
+
   const nextPage = () => {
     if (page < totalPages - 1) setPage(page + 1);
   };
@@ -40,13 +54,14 @@ export default function ProductCarousel({ brandSlug }) {
       {page > 0 && (
         <button
           onClick={prevPage}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10
+             transition-transform duration-200 hover:scale-110"
         >
           <ChevronLeft size={32} strokeWidth={2} />
         </button>
       )}
 
-      <div className="flex justify-between transition-all duration-500">
+      <div className="flex justify-between transition-all duration-500 gap-14">
         {visibleProducts.map((item) => (
           <ProductCard key={item.id} product={item} />
         ))}
@@ -55,7 +70,8 @@ export default function ProductCarousel({ brandSlug }) {
       {page < totalPages - 1 && (
         <button
           onClick={nextPage}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10
+             transition-transform duration-200 hover:scale-110"
         >
           <ChevronRight size={28} strokeWidth={2} />
         </button>
